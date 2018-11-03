@@ -1,0 +1,10 @@
+.canvas-main-div{
+    height: 100%;
+    width: 100%;
+}
+.canvas-style{
+    height: 100%;
+    width: 100%;
+    border: 5px solid orange;
+    
+}
