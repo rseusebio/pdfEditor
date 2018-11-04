@@ -4,6 +4,7 @@
     border: 3px dashed darkred;
     overflow-x: scroll;
     overflow-y: scroll;
+    background-color: rgba(20, 20, 20, 1)
 }
 #canvas{
     cursor: pointer;

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import "./Canvas.css";
 
 class FunnyDot{
+
   constructor(x, y, raio, X, Y ){
     this.x = x;
     this.y = y;
@@ -9,13 +10,54 @@ class FunnyDot{
     this.X = X;
     this.Y = Y;
   }
+
   getRelativeX(X){
    return  X / this.X * this.x;
   }
+
   getRelativeY(Y){
     return Y / this.Y * this.y;
   }
+
 }
+
+class Markup{
+  
+  constructor(x, y, sizeX, sizeY, orgWidth, orgHeight, type, color, lineWidth){
+    this.x = x;
+    this.y = y;
+    this.sizeX = sizeX;
+    this.sizeY = sizeY;
+    this.orgWidth = orgWidth;
+    this.orgHeight = orgHeight;
+    this.type = type;
+    this.color = color;
+    this.lineWidth;
+  }
+
+  getRelativeX(currentWidth){
+    return  currentWidth / this.orgWidth * this.x;
+  }
+
+  getRelativeY(currentHeight){
+    return  currentHeight / this.orgHeight * this.y;
+  }
+
+  getRelativeSizeX(currentWidth){
+    return  currentWidth / this.orgWidth * this.sizeX;
+  }
+  getRelativeSizeY(currentHeight){
+    return  currentHeight / this.orgHeight * this.sizeY;
+  }
+  drawMarkup(canvas){
+    var context = canvas.getContext("2d");
+    var x, y, sizeX, sizeY, 
+  }
+  drawOpenMarkup(x, y, sizeX, sizeY, color){
+
+  }
+}
+
 export default class Canvas extends Component {
 
   constructor(props){
@@ -25,70 +67,22 @@ export default class Canvas extends Component {
       canvasWidth: 0, 
     }
     this.dots = [];
+    this.className = "Canvas";
   }
 
   componentDidMount(){
-    this.setCanvasSize();
-    this.onWindowResize();
-    this.setOnCanvasClick();
     this.loadImage();
-    this.props.zoomer.loadImage = this.loadImage;
-    this.props.zoomer.redrawDots = this.redrawDots;
-    this.props.zoomer.dots = this.dots;
-    this.props.zoomer.drawDot = this.drawDot;
-    console.log("canvas mounted");
-    
+    this.setOnCanvasClick();
+    this.setParentProps();
+  }
+
+  setParentProps(){
+    this.props.parent.canvas = this;
   }
 
   setOnCanvasClick(){
     var canvas = document.getElementById("canvas");
     canvas.onclick = (mouseEvent)=>{ this.onCanvasClick(mouseEvent)}
-    console.log("canvas on click handler has been setted.");
-  }
-
-  setCanvasSize(){
-    var canvasDiv = document.getElementById("canvas-main-div");
-    if(canvasDiv !== null){
-      this.setState(
-        {
-          canvasHeight: canvasDiv.offsetHeight,
-          canvasWidth: canvasDiv.offsetWidth,
-        }
-      );
-    }
-  }
-
-  onWindowResize(){
-    window.onresize = (event) =>{
-      var canvasDiv = document.getElementById("canvas-main-div");
-      if(canvasDiv !== null){
-        this.setState(
-          {
-            canvasHeight: canvasDiv.offsetHeight,
-            canvasWidth: canvasDiv.offsetWidth,
-          }
-        );
-      }
-      this.loadImage();
-      var canvas = document.getElementById("canvas");
-      if( canvas !== null ){
-        console.log(`canvasHeight: ${canvas.height}, canvasWidth: ${canvas.width}`);
-      }
-  
-    }
-  }
-
-  onCanvasClick2(mouseEvent){
-    var otherProps = []
-    for(var prop in mouseEvent){
-      if(prop.search("x") !==-1 || prop.search("X") !== -1 || prop.search("y") !== -1 || prop.search("Y") !== -1){
-        console.log(prop);
-      }
-      else{
-        otherProps.push(prop);
-      }
-    }
-    console.log(otherProps);
   }
 
   onCanvasClick(mouseEvent){
@@ -104,8 +98,8 @@ export default class Canvas extends Component {
 
     var dot = new FunnyDot(x, y, raio, X, Y);
     this.dots.push(dot);
-
   }
+
   drawDot(x, y, raio){
     var canvas = document.getElementById("canvas");
     var context = canvas.getContext("2d");
@@ -115,6 +109,7 @@ export default class Canvas extends Component {
     context.fill();
     context.stroke();
   }
+
   redrawDots(){
     console.log("redrawing dots");
     var canvas = document.getElementById("canvas");
@@ -123,59 +118,39 @@ export default class Canvas extends Component {
       this.drawDot(dot.getRelativeX(canvas.width), dot.getRelativeY(canvas.height), dot.raio);
     }
   }
+
   loadImage(){
     var img = new Image();
-    //img.crossOrigin = "anonymous";
-    img.src = "http://localhost:8000/static/dog.jpg";
+    img.src = "http://localhost:8000/static/boat.jpg";
     console.log("loadImage");
     img.onload = ()=>{ 
-        var canvas = document.getElementById("canvas");
-        /*
-        var imgHeight = null, imgWidth = null;
-        if(img.height > img.width){
-          if(img.height > canvas.height){
-            imgHeight = canvas.height;
-            imgWidth = img.width / img.height * imgHeight;
-          }
+      var canvas = document.getElementById("canvas");
+      this.setState(
+        {
+          canvasHeight: img.height ,
+          canvasWidth: img.width ,
         }
-        else{
-          if(img.width > canvas.width){
-            imgWidth = canvas.width;
-            imgHeight = img.height / img.width * imgWidth;
-          }
-        }
-        if(imgHeight === null || imgWidth === null){
-          imgHeight = img.height;
-          imgWidth = img.width;
-        }
-        var height = img.height/3;
-        var width = img.width/3;
-        */
-       this.setState(
-         {
-            canvasHeight: img.height,
-            canvasWidth: img.width,
-         }
-       )
-        var context = canvas.getContext("2d");
-        context.drawImage(img, 0, 0, img.width * this.state.zoomer, img.height * this.state.zoomer);
-        this.redrawDots();
-      }
-    
+      )
+      var context = canvas.getContext("2d");
+      context.drawImage(img, 0, 0, img.width * this.props.parent.state.zoomFactor, img.height * this.props.parent.state.zoomFactor);
+      this.redrawDots();
+    }
   }
+
   render() {
     return (
       <div
         id="canvas-main-div"
         className={"canvas-main-div"}>
+
         <canvas
           id = {"canvas"}
           className={"canvas-style"}
-          height={this.state.canvasHeight * this.props.zoomer.state.zoomer}
-          width={this.state.canvasWidth * this.props.zoomer.state.zoomer}>
+          height={this.state.canvasHeight * this.props.parent.state.zoomFactor}
+          width={this.state.canvasWidth * this.props.parent.state.zoomFactor}>
         </canvas>
-      </div>
 
+      </div>
     );
   }
 }
