@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Canvas from "./Components/Canvas";
 import ZoomService from "./Components/ZoomService";
 import CanvasConfiguration from "./Components/CanvasConfiguration";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import './App.css';
 
 
@@ -21,10 +22,7 @@ class App extends Component {
 
         <div
           className={"app-nav-bar"}>
-          <button
-           onClick={ ()=> { this.testFunc() } }>
-            Test Button
-          </button>
+          
         </div>
 
         <div
