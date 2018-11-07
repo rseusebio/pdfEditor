@@ -1,7 +1,6 @@
 .canvas-main-div{
     height: 99.4%;
     width: 85%;
-    border: 3px dashed darkred;
     overflow-x: scroll;
     overflow-y: scroll;
     background-color: rgba(20, 20, 20, 1)

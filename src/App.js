@@ -1,10 +1,39 @@
 import React, { Component } from 'react';
 import Canvas from "./Components/Canvas";
-import ZoomService from "./Components/ZoomService";
 import CanvasConfiguration from "./Components/CanvasConfiguration";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import PdfForm from "./Components/PdfForm";
+import { Switch, Route, Link, BrowserRouter } from "react-router-dom";
+import { MenuList, MenuItem,ListItemText } from '@material-ui/core';
+
 import './App.css';
 
+class CanvasGroup extends Component{
+
+  constructor(props){
+    super(props);
+    this.state = {
+      zoomFactor: 1, 
+    }
+  }
+
+  render(){
+    return(
+      (
+        <div
+          className={"app-content-div"}>
+
+          <CanvasConfiguration
+           parent = { this }/>
+
+          <Canvas
+           parent = { this }/>
+
+        </div>
+
+      )
+    )
+  }
+}
 
 class App extends Component {
 
@@ -18,31 +47,108 @@ class App extends Component {
   
   render() {
     return (
+      <BrowserRouter>
       <div className={"app-main-div"}>
 
         <div
           className={"app-nav-bar"}>
+           <MenuList
+            className={ "app-menulist"}>
+
+                  <MenuItem>
+
+                    <Link 
+                      className = { "app-link"}
+                      to="/upload">
+                        Upload
+                    </Link>
+
+                  </MenuItem>
+
+                  <MenuItem>
+
+                    <Link 
+                    className = { "app-link"}
+                    to="/canvas">
+                      Canvas
+                    </Link>
+
+                  </MenuItem>
+
+            
+                  <MenuItem>
+
+                    <ListItemText primary="Sent mail" />
+
+                  </MenuItem>
+
+
+                  <MenuItem>
+
+                    <ListItemText  primary="Drafts" />
+
+                  </MenuItem>
+
+
+                  <MenuItem >
+          
+                    <ListItemText primary="Inbox" />
+
+                  </MenuItem>
+
+                  <MenuItem>
+
+                    <button
+                     onClick = { () => {
+                       fetch("http://localhost:8000/books/getpage/2/3/", { method: 'GET', headers: new Headers(), })
+                       .then((response) => {
+                         return response.json();
+                       })
+                       .then((response)=>{
+                         console.log( response );
+                       })
+                       .catch((err)=>{
+                         console.log("Error: ");
+                         console.log(err);
+                       })
+                       
+                     }}>
+                      Click
+                    </button>
+
+                  </MenuItem>
+
+                </MenuList>
           
         </div>
+        
 
-        <div
-          className={"app-content-div"}>
+          <Switch>
+  
+            <Route path="/canvas" component={CanvasGroup} />
 
-          <CanvasConfiguration
-           parent = { this }
-          />
-
-          <Canvas
-           parent = { this }
-           />
-
-
-        </div>
-
+            <Route path="/upload" component={PdfForm} />
+  
+          </Switch>
+          
+     
+        
       </div>
+      </BrowserRouter>
     )
   }
 
 }
+/*
+<AppBar>
+            <ToolBar>
+              <Typography>
+                News
+              </Typography>
+            </ToolBar>
+          </AppBar>
+<Route path="/" component={}/>
 
+
+*/
 export default App;

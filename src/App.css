@@ -18,7 +18,7 @@
 .app-nav-bar{
   height: 10%;
   width: 100%;
-  border: 3px darkred solid;
+  background-color: #3f47b7;
 
 }
 
@@ -30,3 +30,13 @@
 
 }
 
+.app-menulist{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.app-link{
+  text-decoration: none;
+  color: white;
+}

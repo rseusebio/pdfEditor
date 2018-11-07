@@ -124,6 +124,7 @@ export default class Canvas extends Component {
     var markup = new Markup(x, y,sizeX, sizeY, canvas.width, canvas.height, type, color, lineWidth);
     markup.drawMarkup(canvas);
     this.markups.push(markup);
+    console.log(markup);
 
   }
 
