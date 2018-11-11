@@ -3,7 +3,7 @@ import Canvas from "./Components/Canvas";
 import CanvasConfiguration from "./Components/CanvasConfiguration";
 import PdfForm from "./Components/PdfForm";
 import { Switch, Route, Link, BrowserRouter } from "react-router-dom";
-import { MenuList, MenuItem,ListItemText } from '@material-ui/core';
+import { MenuList, MenuItem, } from '@material-ui/core';
 
 import './App.css';
 
@@ -75,26 +75,6 @@ class App extends Component {
 
                   </MenuItem>
 
-            
-                  <MenuItem>
-
-                    <ListItemText primary="Sent mail" />
-
-                  </MenuItem>
-
-
-                  <MenuItem>
-
-                    <ListItemText  primary="Drafts" />
-
-                  </MenuItem>
-
-
-                  <MenuItem >
-          
-                    <ListItemText primary="Inbox" />
-
-                  </MenuItem>
 
                   <MenuItem>
 

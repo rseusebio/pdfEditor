@@ -40,6 +40,16 @@ export default class CanvasConfiguration extends Component{
         }
         this.props.parent.canvas.loadImage();
     }
+    saveMarkups(){
+        try{
+            this.props.parent.canvas.saveMarkups();
+        }
+        catch(Err){
+            console.log("Error at saveMarkups from canvasConfiguration.");
+            console.log(Err);
+        }
+
+    }
     
     render(){
         return(
@@ -52,6 +62,10 @@ export default class CanvasConfiguration extends Component{
                 <button
                     onClick={() => { this.zoomOut() }}>
                     Zoom out
+                </button>
+                <button
+                    onClick={ ()=>{this.saveMarkups(); } }>
+                    Save Markups
                 </button>
             </div>
         )
