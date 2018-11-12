@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import "./Canvas.css";
 
-
 class Markup {
 
     constructor(x, y, sizeX, sizeY, orgWidth, orgHeight, type, color, lineWidth) {
@@ -100,6 +99,13 @@ export default class Canvas extends Component {
         this.loadImage();
         this.setOnCanvasClick();
         this.setParentProps();
+        console.log(this.props.parent.props.book);
+    }
+
+    getImage() {
+        var book = this.props.parent.props.book;
+        var url = `http://localhost:8000/books/getpage/${book.id}/1/`
+        return url;
     }
 
     setParentProps() {
@@ -153,7 +159,7 @@ export default class Canvas extends Component {
         var json = this.turnArrayIntoJson(this.markups);
         form.append("markups", json);
         form.append("book_id", 1);
-        form.append("page_number",23 );
+        form.append("page_number", 23);
         var options = {
             method: 'POST',
             mode: 'cors',
@@ -221,10 +227,8 @@ export default class Canvas extends Component {
     // }
 
 
-    loadImage() {
+    loadImage(imageSource = this.getImage()) {
         var img = new Image();
-        img.src = "http://localhost:8000/static/boat.jpg";
-        console.log("loadImage");
         img.onload = () => {
             var canvas = document.getElementById("canvas");
             this.setState(
@@ -236,7 +240,48 @@ export default class Canvas extends Component {
             var context = canvas.getContext("2d");
             context.drawImage(img, 0, 0, img.width * this.props.parent.state.zoomFactor, img.height * this.props.parent.state.zoomFactor);
             this.redrawMarkups();
+        };
+        console.log("loadImage is executing");
+        if (imageSource == null) {
+            img.src = "http://localhost:8000/static/boat.jpg";
         }
+        else {
+            console.log("nice 1");
+            img.src = imageSource;
+        }
+
+
+    }
+
+    loadBook() {
+        var options = {
+            method: "GET",
+            headers: new Headers(),
+        };
+        var url = "http://localhost:8000/books/getbook/1/";
+        fetch(url, options)
+            .then(
+                (response) => {
+                    return response.blob()
+                }
+            )
+            .then(
+                (blobed) => {
+                    console.log(blobed);
+
+                    // fs.writeFile("../testImage.jpg", blobed, (err) => {
+                    //     console.log("error writing a file");
+                    //     console.log(err);
+                    // });
+                    this.loadImage("http://localhost:8000/books/getbook/1/");
+                }
+            )
+        // .catch(
+        //     (err) => {
+        //         console.log("error when tried to load book")
+        //         console.log(err);
+        //     }
+        // )
     }
 
     render() {

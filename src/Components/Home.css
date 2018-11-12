@@ -1,0 +1,29 @@
+.home-main-div {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+
+}
+
+.home-header-div {
+}
+
+.home-header-paragraph {
+    color: black;
+    font-size: 25px;
+}
+
+.home-books-div{
+    width: 90%;
+    padding: 3px;
+    border: 1px solid black;
+    overflow-x: scroll;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}

@@ -1,134 +1,150 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import Canvas from "./Components/Canvas";
 import CanvasConfiguration from "./Components/CanvasConfiguration";
 import PdfForm from "./Components/PdfForm";
-import { Switch, Route, Link, BrowserRouter } from "react-router-dom";
-import { MenuList, MenuItem, } from '@material-ui/core';
+import Home from "./Components/Home";
+import Book from "./Components/Book";
+import {Switch, Route, Link, BrowserRouter} from "react-router-dom";
+import {MenuList, MenuItem,} from '@material-ui/core';
 
 import './App.css';
 
-class CanvasGroup extends Component{
+const ModifiedRoute = ({component: Component, book: book}) => (
+    <Route render={props => (
 
-  constructor(props){
-    super(props);
-    this.state = {
-      zoomFactor: 1, 
+        <Component {...props} book={book}/>
+
+    )}/>
+);
+
+var book = new Book(0,0,'');
+console.log(book);
+
+class CanvasGroup extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            zoomFactor: 1,
+        }
     }
-  }
 
-  render(){
-    return(
-      (
-        <div
-          className={"app-content-div"}>
+    render() {
+        return (
+            (
+                <div
+                    className={"app-content-div"}>
 
-          <CanvasConfiguration
-           parent = { this }/>
+                    <CanvasConfiguration
+                        parent={this}/>
 
-          <Canvas
-           parent = { this }/>
+                    <Canvas
+                        parent={this}/>
 
-        </div>
+                </div>
 
-      )
-    )
-  }
+            )
+        )
+    }
 }
 
 class App extends Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      zoomFactor: 1,
+    constructor(props) {
+        super(props);
+        this.state = {
+            zoomFactor: 1,
+        };
+        this.className = "App";
     }
-    this.className = "App";
-  }
-  
-  render() {
-    return (
-      <BrowserRouter>
-      <div className={"app-main-div"}>
 
-        <div
-          className={"app-nav-bar"}>
-           <MenuList
-            className={ "app-menulist"}>
+    render() {
+        return (
+            <BrowserRouter>
+                <div className={"app-main-div"}>
 
-                  <MenuItem>
+                    <div
+                        className={"app-nav-bar"}>
+                        <MenuList
+                            className={"app-menulist"}>
 
-                    <Link 
-                      className = { "app-link"}
-                      to="/upload">
-                        Upload
-                    </Link>
+                            <MenuItem>
+                                <Link
+                                    to={"/home"}
+                                    className={"app-link"}>
+                                    Home
+                                </Link>
+                            </MenuItem>
 
-                  </MenuItem>
-
-                  <MenuItem>
-
-                    <Link 
-                    className = { "app-link"}
-                    to="/canvas">
-                      Canvas
-                    </Link>
-
-                  </MenuItem>
+                            <MenuItem>
 
 
-                  <MenuItem>
+                                <Link
+                                    className={"app-link"}
+                                    to="/upload">
+                                    Upload
+                                </Link>
 
-                    <button
-                     onClick = { () => {
-                       fetch("http://localhost:8000/books/getpage/2/3/", { method: 'GET', headers: new Headers(), })
-                       .then((response) => {
-                         return response.json();
-                       })
-                       .then((response)=>{
-                         console.log( response );
-                       })
-                       .catch((err)=>{
-                         console.log("Error: ");
-                         console.log(err);
-                       })
-                       
-                     }}>
-                      Click
-                    </button>
+                            </MenuItem>
 
-                  </MenuItem>
+                            <MenuItem>
 
-                </MenuList>
-          
-        </div>
-        
+                                <Link
+                                    id={"canvas-link"}
+                                    className={"app-link"}
+                                    to="/canvas">
+                                    Canvas
+                                </Link>
 
-          <Switch>
-  
-            <Route path="/canvas" component={CanvasGroup} />
+                            </MenuItem>
 
-            <Route path="/upload" component={PdfForm} />
-  
-          </Switch>
-          
-     
-        
-      </div>
-      </BrowserRouter>
-    )
-  }
+
+                            <MenuItem>
+
+                                <button
+                                    onClick={() => {
+                                        fetch("http://localhost:8000/books/getpage/2/3/", {
+                                            method: 'GET',
+                                            headers: new Headers(),
+                                        })
+                                            .then((response) => {
+                                                return response.json();
+                                            })
+                                            .then((response) => {
+                                                console.log(response);
+                                            })
+                                            .catch((err) => {
+                                                console.log("Error: ");
+                                                console.log(err);
+                                            })
+
+                                    }}>
+                                    Click
+                                </button>
+
+                            </MenuItem>
+
+                        </MenuList>
+
+                    </div>
+
+
+                    <Switch>
+
+                        <ModifiedRoute path="/home" component={Home} book={book}/>
+
+                        <ModifiedRoute path="/canvas" component={CanvasGroup} book={book}/>
+
+                        <Route path="/upload" component={PdfForm}/>
+
+                    </Switch>
+
+
+                </div>
+            </BrowserRouter>
+        )
+    }
 
 }
-/*
-<AppBar>
-            <ToolBar>
-              <Typography>
-                News
-              </Typography>
-            </ToolBar>
-          </AppBar>
-<Route path="/" component={}/>
 
-
-*/
 export default App;

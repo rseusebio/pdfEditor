@@ -1,33 +1,34 @@
-import React ,  { Component } from 'react';
+import React, {Component} from 'react';
 import './CanvasConfiguration.css';
 
-export default class CanvasConfiguration extends Component{
+export default class CanvasConfiguration extends Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
         this.className = "CanvasConfiguration";
     }
-    componentDidMount(){
+
+    componentDidMount() {
         this.setParentProps();
     }
 
-    setParentProps(){
+    setParentProps() {
         this.props.parent.canvasConfiguration = this;
     }
 
-    zoomIn(){
-    var zoomFactor = this.props.parent.state.zoomFactor + 0.1;
+    zoomIn() {
+        var zoomFactor = this.props.parent.state.zoomFactor + 0.1;
 
-    this.props.parent.setState(
-        {
-            zoomFactor: zoomFactor,
-        }
-    );
-    this.props.parent.canvas.loadImage();
+        this.props.parent.setState(
+            {
+                zoomFactor: zoomFactor,
+            }
+        );
+        this.props.parent.canvas.loadImage();
     }
 
-    zoomOut(){
-        if(this.props.parent.state.zoomFactor >= 0.2){
+    zoomOut() {
+        if (this.props.parent.state.zoomFactor >= 0.2) {
             var zoomFactor = this.props.parent.state.zoomFactor - 0.1;
             this.props.parent.setState(
                 {
@@ -35,38 +36,52 @@ export default class CanvasConfiguration extends Component{
                 }
             );
         }
-        else{
+        else {
             console.log(this.props.parent.zoomFactor)
         }
         this.props.parent.canvas.loadImage();
     }
-    saveMarkups(){
-        try{
+
+    saveMarkups() {
+        try {
             this.props.parent.canvas.saveMarkups();
         }
-        catch(Err){
+        catch (Err) {
             console.log("Error at saveMarkups from canvasConfiguration.");
             console.log(Err);
         }
 
     }
-    
-    render(){
-        return(
+
+    render() {
+        return (
             <div
-             className={"canvasConfig-main-div"}>
-                 <button
-                    onClick={() => { this.zoomIn() }}>
+                className={"canvasConfig-main-div"}>
+                <button
+                    onClick={() => {
+                        this.zoomIn()
+                    }}>
                     Zoom in
                 </button>
                 <button
-                    onClick={() => { this.zoomOut() }}>
+                    onClick={() => {
+                        this.zoomOut()
+                    }}>
                     Zoom out
                 </button>
                 <button
-                    onClick={ ()=>{this.saveMarkups(); } }>
+                    onClick={() => {
+                        this.saveMarkups();
+                    }}>
                     Save Markups
                 </button>
+                <button
+                    onClick={() => {
+                        this.props.parent.canvas.loadBook();
+                    }}>
+                    LoadBook
+                </button>
+
             </div>
         )
     }

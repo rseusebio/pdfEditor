@@ -1,0 +1,23 @@
+.bookcard-main-div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 180px;
+    width: 180px;
+    background-color: lightgrey;
+    cursor: pointer;
+    margin: 2px;
+}
+
+.bookcard-image {
+    height: 150px;
+    width: 150px;
+    border: 1px solid lightblue;
+}
+
+.bookcard-button {
+    width: 80%;
+    background-color: dodgerblue;
+    color: white;
+}
