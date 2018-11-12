@@ -17,7 +17,8 @@ const ModifiedRoute = ({component: Component, book: book}) => (
     )}/>
 );
 
-var book = new Book(0,0,'');
+var book = new Book(0, 0, '');
+
 console.log(book);
 
 class CanvasGroup extends Component {
@@ -57,7 +58,7 @@ class App extends Component {
         };
         this.className = "App";
     }
-
+    
     render() {
         return (
             <BrowserRouter>

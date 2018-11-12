@@ -104,7 +104,7 @@ export default class Canvas extends Component {
 
     getImage() {
         var book = this.props.parent.props.book;
-        var url = `http://localhost:8000/books/getpage/${book.id}/1/`
+        var url = `http://localhost:8000/books/getpage/${book.id}/${book.currentPage}/`
         return url;
     }
 
@@ -241,16 +241,20 @@ export default class Canvas extends Component {
             context.drawImage(img, 0, 0, img.width * this.props.parent.state.zoomFactor, img.height * this.props.parent.state.zoomFactor);
             this.redrawMarkups();
         };
-        console.log("loadImage is executing");
         if (imageSource == null) {
             img.src = "http://localhost:8000/static/boat.jpg";
         }
         else {
-            console.log("nice 1");
             img.src = imageSource;
         }
+    }
 
-
+    getCanvasSize(){
+        var canvas = document.getElementById("canvas");
+        var {height, width} = canvas;
+        console.log("------------------");
+        console.log(height, width);
+        console.log("------------------");
     }
 
     loadBook() {

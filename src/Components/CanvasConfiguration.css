@@ -1,4 +1,13 @@
-.canvasConfig-main-div{
-  height: 99.5%;
-  width: 20%;
+.canvasConfig-main-div {
+    height: 99.5%;
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.canvasConfig-textfield {
+    height: 200px;
+    width: 100px;
 }
