@@ -20,7 +20,7 @@ export default class Home extends Component {
             method: 'GET',
             headers: new Headers(),
         };
-        var url = "http://localhost:8000/books/getloadedbooks/";
+        var url = "http://localhost:8000/books/getbooks/";
         fetch(url, options)
             .then(
                 (response) => {

@@ -158,8 +158,8 @@ export default class Canvas extends Component {
         var form = new FormData();
         var json = this.turnArrayIntoJson(this.markups);
         form.append("markups", json);
-        form.append("book_id", 1);
-        form.append("page_number", 23);
+        form.append("bookId", this.props.parent.props.book.id);
+        form.append("page", this.props.parent.props.book.currentPage);
         var options = {
             method: 'POST',
             mode: 'cors',
@@ -167,26 +167,32 @@ export default class Canvas extends Component {
             body: form,
         };
         var url = "http://localhost:8000/books/setmarkups/";
-        fetch(url, options)
-            .then(
-                (response) => {
-                    console.log("received a response");
-                    return response.json();
-                }
-            )
-            .then(
-                (json) => {
-                    console.log("receive a json object.");
+        if (this.props.parent.props.book.id != null) {
+            fetch(url, options)
+                .then(
+                    (response) => {
+                        console.log("received a response");
+                        return response.json();
+                    }
+                )
+                .then(
+                    (json) => {
+                        console.log("receive a json object.");
 
-                    console.log(json);
-                }
-            )
-            .catch(
-                (error) => {
-                    console.log("an error happened");
-                    console.log(error);
-                }
-            )
+                        console.log(json);
+                    }
+                )
+                .catch(
+                    (error) => {
+                        console.log("an error happened");
+                        console.log(error);
+                    }
+                )
+        }
+        else{
+            window.alert("Could not retrieve your markups. sorry.");
+        }
+
     }
 
     // saveMarkupsTest(){
@@ -249,7 +255,7 @@ export default class Canvas extends Component {
         }
     }
 
-    getCanvasSize(){
+    getCanvasSize() {
         var canvas = document.getElementById("canvas");
         var {height, width} = canvas;
         console.log("------------------");
