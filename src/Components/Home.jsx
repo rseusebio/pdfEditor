@@ -29,7 +29,8 @@ export default class Home extends Component {
             )
             .then(
                 (json) => {
-
+                    console.log("json: ");
+                    console.log(json);
                     var books = [];
                     for (var book in json) {
                         book = json[book];
@@ -37,8 +38,8 @@ export default class Home extends Component {
                             <BookCard
                                 book={this.props.book}
                                 id={book.id}
-                                name={book.name}
-                                pages={book.pages}
+                                name={book._name}
+                                pages={book._pages}
                                 imageSource={`http://localhost:8000/books/getpage/${book.id}/1`}
                             />
                         );

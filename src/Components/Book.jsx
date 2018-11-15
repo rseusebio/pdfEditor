@@ -26,7 +26,7 @@ export default class Book {
 
     setName(name) {
         if (typeof name == 'string') {
-            if(name != ''){
+            if(name !== ''){
                 this.name = name;
             }
 

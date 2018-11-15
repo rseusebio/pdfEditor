@@ -11,9 +11,7 @@ import './App.css';
 
 const ModifiedRoute = ({component: Component, book: book}) => (
     <Route render={props => (
-
         <Component {...props} book={book}/>
-
     )}/>
 );
 
@@ -58,7 +56,7 @@ class App extends Component {
         };
         this.className = "App";
     }
-    
+
     render() {
         return (
             <BrowserRouter>

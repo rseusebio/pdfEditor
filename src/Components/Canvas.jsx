@@ -45,11 +45,16 @@ class Markup {
         lineWidth = this.getRelativeLineWidth(canvas.width);
 
         if (this.type === "open") {
+            console.log(`drawing an markup of the type: ${this.type}`);
             this.drawOpenMarkup(x, y, sizeX, sizeY, this.color, lineWidth, canvas);
         }
 
         else if (this.type === "close") {
+            console.log(`drawing an markup of the type: ${this.type}`);
             this.drawOpenMarkup(x, y, sizeX, sizeY, this.color, lineWidth, canvas);
+        }
+        else {
+            console.log(`could not draw anything because it's type is ${this.type}`);
         }
 
     }
@@ -90,7 +95,10 @@ export default class Canvas extends Component {
         this.state = {
             canvasHeight: 0,
             canvasWidth: 0,
-        }
+            resizeFactor: 1,
+            shouldErase: false,
+            type: "open",
+        };
         this.markups = [];
         this.className = "Canvas";
     }
@@ -136,8 +144,13 @@ export default class Canvas extends Component {
 
     redrawMarkups() {
         var canvas = document.getElementById("canvas");
+        console.log(`trying to redraw this element`);
+        var index = 0;
         for (var markup of this.markups) {
+            index++;
+            console.log(`markup number ${index}`);
             markup.drawMarkup(canvas);
+
         }
     }
 
@@ -159,7 +172,7 @@ export default class Canvas extends Component {
         var json = this.turnArrayIntoJson(this.markups);
         form.append("markups", json);
         form.append("bookId", this.props.parent.props.book.id);
-        form.append("page", this.props.parent.props.book.currentPage);
+        form.append("pageNumber", this.props.parent.props.book.currentPage);
         var options = {
             method: 'POST',
             mode: 'cors',
@@ -189,110 +202,121 @@ export default class Canvas extends Component {
                     }
                 )
         }
-        else{
+        else {
             window.alert("Could not retrieve your markups. sorry.");
         }
-
     }
 
-    // saveMarkupsTest(){
-    //     var headers = new Headers();
-    //     // var form = new FormData();
-    //     var json = this.turnArrayIntoJson(this.markups);
-    //     console.log(`json: ${json}.`);
-    //     // form.append("markups", json);
-    //     // console.log(`fomr.get('markups'): ${form.get('markups')}`);
-    //     console.log(JSON.parse(json));
-    //     var options = {
-    //         method: 'POST',
-    //         mode: 'cors',
-    //         headers: headers,
-    //         body: json,
-    //     };
-    //     var url = "http://localhost:8000/books/setmarkups/";
-    //     fetch(url, options)
-    //         .then(
-    //             (response) => {
-    //                 console.log("received a response");
-    //                 return response.json();
-    //             }
-    //         )
-    //         .then(
-    //             (json) => {
-    //                 console.log("receive a json object.");
-    //
-    //                 console.log(json);
-    //             }
-    //         )
-    //         .catch(
-    //             (error) => {
-    //                 console.log("an error happened");
-    //                 console.log(error);
-    //             }
-    //         )
-    // }
-
-
-    loadImage(imageSource = this.getImage()) {
-        var img = new Image();
-        img.onload = () => {
-            var canvas = document.getElementById("canvas");
-            this.setState(
-                {
-                    canvasHeight: img.height,
-                    canvasWidth: img.width,
-                }
-            );
-            var context = canvas.getContext("2d");
-            context.drawImage(img, 0, 0, img.width * this.props.parent.state.zoomFactor, img.height * this.props.parent.state.zoomFactor);
-            this.redrawMarkups();
-        };
-        if (imageSource == null) {
-            img.src = "http://localhost:8000/static/boat.jpg";
-        }
-        else {
-            img.src = imageSource;
-        }
-    }
-
-    getCanvasSize() {
-        var canvas = document.getElementById("canvas");
-        var {height, width} = canvas;
-        console.log("------------------");
-        console.log(height, width);
-        console.log("------------------");
-    }
-
-    loadBook() {
+    getMarkups() {
+        var bookId = this.props.parent.props.book.id;
+        var pageNumber = this.props.parent.props.book.currentPage;
+        var url = `http://localhost:8000/books/getmarkups2/${bookId}/${pageNumber}`;
+        var headers = new Headers();
+        headers.append("testTitle", "nice weather, isn't it ?");
         var options = {
-            method: "GET",
             headers: new Headers(),
+            method: "GET",
         };
-        var url = "http://localhost:8000/books/getbook/1/";
+        console.log(`fetching markups for book = ${bookId}, page= ${pageNumber}`);
         fetch(url, options)
             .then(
                 (response) => {
-                    return response.blob()
+                    return response.json();
                 }
             )
             .then(
-                (blobed) => {
-                    console.log(blobed);
-
-                    // fs.writeFile("../testImage.jpg", blobed, (err) => {
-                    //     console.log("error writing a file");
-                    //     console.log(err);
-                    // });
-                    this.loadImage("http://localhost:8000/books/getbook/1/");
+                (json) => {
+                    if (json['result'] == true) {
+                        this.clearMarkupArray();
+                        for (var markup in json.markups) {
+                            markup = json.markups[markup];
+                            var x = markup._x;
+                            var y = markup._y;
+                            var sizeX = markup._sizeX;
+                            var sizeY = markup._sizeY;
+                            var orgWidth = markup._orgWidth;
+                            var orgHeight = markup._orgHeight;
+                            var type = markup._type;
+                            var color = markup._color;
+                            var lineWidth = markup._lineWidth;
+                            var markupObj = new Markup(x, y, sizeX, sizeY, orgWidth, orgHeight, type, color, lineWidth);
+                            this.markups.push(markupObj);
+                        }
+                        this.loadImage();
+                    }
                 }
             )
-        // .catch(
-        //     (err) => {
-        //         console.log("error when tried to load book")
-        //         console.log(err);
-        //     }
-        // )
+            .catch(
+                (error) => {
+                    console.log(error);
+                }
+            )
     }
+
+    clearMarkupArray() {
+        var length = this.markups.length;
+        for (var i = 0; i < length; i++) {
+            delete this.markups.pop();
+        }
+        console.log(`clearMarkupArray(): deleted ${length} elements`);
+    }
+
+    cleanCanvas() {
+        this.clearMarkupArray();
+        this.loadImage();
+    }
+
+    eraseASingleMarkup() {
+
+    }
+
+    getResizeFactor(img) {
+        var canvasDiv = document.getElementById("canvas-main-div");
+        console.log(`state before: ${this.props.parent.state.zoomFactor}`);
+        console.log(img);
+        var resizeFactor;
+        if (img.height >= img.width) {
+            resizeFactor = canvasDiv.offsetHeight / img.height;
+        }
+        else {
+            resizeFactor = canvasDiv.offsetWidth / img.width;
+        }
+        return resizeFactor;
+    }
+
+    loadImage(autoResize = true) {
+        var img = new Image();
+        img.onload = () => {
+            var resizeFactor = this.state.resizeFactor;
+            if (autoResize) {
+                resizeFactor = this.getResizeFactor(img);
+                this.props.parent.setState(
+                    {
+                        zoomFactor: 1,
+                    }
+                );
+                this.setState(
+                    {
+                        resizeFactor: resizeFactor,
+                    }
+                );
+            }
+            this.setState(
+                {
+                    canvasHeight: img.height * resizeFactor,
+                    canvasWidth: img.width * resizeFactor,
+                }
+            );
+            var canvas = document.getElementById("canvas");
+            var context = canvas.getContext("2d");
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(img, 0, 0, img.width * this.props.parent.state.zoomFactor * resizeFactor, img.height * this.props.parent.state.zoomFactor * resizeFactor);
+            this.redrawMarkups();
+        };
+
+        img.src = this.getImage();
+    }
+
 
     render() {
         return (

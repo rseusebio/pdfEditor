@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import {Link} from "react-router-dom";
 import './BookCard.css';
 
 export default class BookCard extends Component {
@@ -15,6 +14,8 @@ export default class BookCard extends Component {
         this.props.book.name = this.props.name;
         this.props.book.pages = this.props.pages;
         canvasLink.click();
+        console.log(`CARD CLICKED`);
+        console.log(this.props.book);
     }
 
     render() {
@@ -26,6 +27,7 @@ export default class BookCard extends Component {
                         this.onCardClick()
                     }}>
                 <img
+                    alt = {this.props.book.name}
                     className={"bookcard-image"}
                     src={this.props.imageSource}/>
                 <button

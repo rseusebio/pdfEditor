@@ -35,7 +35,7 @@ export default class CanvasConfiguration extends Component {
                 zoomFactor: zoomFactor,
             }
         );
-        this.props.parent.canvas.loadImage();
+        this.props.parent.canvas.loadImage(false);
     }
 
     zoomOut() {
@@ -46,11 +46,10 @@ export default class CanvasConfiguration extends Component {
                     zoomFactor: zoomFactor,
                 }
             );
+            this.props.parent.canvas.loadImage(false);
         }
-        else {
-            console.log(this.props.parent.zoomFactor)
-        }
-        this.props.parent.canvas.loadImage();
+
+
     }
 
     saveMarkups() {
@@ -63,14 +62,16 @@ export default class CanvasConfiguration extends Component {
         }
     }
 
-    pageChange(v1, v2) {
-        if (v1.target.value !== this.state.currentPage) {
+    pageChange(event) {
+        if (event.target.value !== this.state.currentPage) {
             this.setState(
                 {
-                    currentPage: v1.target.value,
+                    currentPage: event.target.value,
                 }
             );
-            this.props.parent.props.book.setCurrentPage(v1.target.value);
+            this.props.parent.props.book.setCurrentPage(event.target.value);
+            this.props.parent.canvas.clearMarkupArray();
+            this.props.parent.canvas.getMarkups();
             this.props.parent.canvas.loadImage();
         }
 
@@ -80,7 +81,7 @@ export default class CanvasConfiguration extends Component {
     createArrayOfPages() {
         var array = [];
         var pages = this.props.parent.props.book.pages;
-        for (var i = 1; i <= 100; i++) {
+        for (var i = 1; i <= pages; i++) {
             var menuItem = (
                 <MenuItem
                     key={i}
@@ -98,6 +99,12 @@ export default class CanvasConfiguration extends Component {
         }
         console.log(`array's length ${array.length}`);
         return array;
+    }
+
+    getMarkups() {
+        if (this.props.parent.props.book.id != null) {
+            this.props.parent.canvas.getMarkups();
+        }
     }
 
     render() {
@@ -130,9 +137,17 @@ export default class CanvasConfiguration extends Component {
                 </button>
                 <button
                     onClick={() => {
-                        this.props.parent.canvas.loadBook();
+                        this.getMarkups();
                     }}>
-                    LoadBook
+                    {
+                        `Get Markups`
+                    }
+                </button>
+                <button
+                    onClick={() => {
+                        this.props.parent.canvas.cleanCanvas();
+                    }}>
+                    Clean Canvas
                 </button>
 
                 <TextField
@@ -142,8 +157,8 @@ export default class CanvasConfiguration extends Component {
                     id={"page-textfield"}
                     className={"canvasConfig-textfield"}
                     helperText={`Here you can select the page you want to read.`}
-                    onChange={(v1, v2) => {
-                        this.pageChange(v1, v2);
+                    onChange={(event) => {
+                        this.pageChange(event);
                     }}
                     margin={"normal"}>
                     {
