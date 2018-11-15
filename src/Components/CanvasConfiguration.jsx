@@ -11,16 +11,32 @@ export default class CanvasConfiguration extends Component {
         this.state = {
             pagesArray: this.createArrayOfPages(),
             currentPage: 1,
-        }
+            lineWidth: 1,
+            sizeX: 7,
+            sizeY: 20,
+            colorStyle: {
+                pink: {},
+                blue: {backgroundColor: "orange"},
+                green: {},
+            },
+            typeStyle: {
+                open: {backgroundColor: "orange"},
+                close: {},
+            },
+            eraseStyle: {},
+        };
+        this.selectedStyle = {
+            backgroundColor: "orange",
+        };
+        this.setParentProps();
     }
 
     componentDidMount() {
-        this.setParentProps();
         this.setState(
             {
                 pagesArray: this.createArrayOfPages(),
             }
-        )
+        );
     }
 
     setParentProps() {
@@ -48,8 +64,6 @@ export default class CanvasConfiguration extends Component {
             );
             this.props.parent.canvas.loadImage(false);
         }
-
-
     }
 
     saveMarkups() {
@@ -74,8 +88,6 @@ export default class CanvasConfiguration extends Component {
             this.props.parent.canvas.getMarkups();
             this.props.parent.canvas.loadImage();
         }
-
-
     }
 
     createArrayOfPages() {
@@ -107,48 +119,155 @@ export default class CanvasConfiguration extends Component {
         }
     }
 
+    changeSelectedColor(color) {
+        var styleSet = {backgroundColor: 'orange'};
+        switch (color) {
+            case "pink":
+                this.setState(
+                    {
+                        colorStyle: {
+                            pink: styleSet,
+                            blue: {},
+                            green: {},
+                        }
+                    }
+                );
+                break;
+            case "blue":
+                this.setState(
+                    {
+                        colorStyle: {
+                            pink: {},
+                            blue: styleSet,
+                            green: {},
+                        }
+                    }
+                );
+                break;
+            case "green":
+                this.setState(
+                    {
+                        colorStyle: {
+                            pink: {},
+                            blue: {},
+                            green: styleSet,
+                        }
+                    }
+                );
+                break;
+        }
+    }
+
+    changeSelectedType(type) {
+        var styleSet = {backgroundColor: 'orange'};
+        switch (type) {
+            case "open":
+                this.setState(
+                    {
+                        typeStyle: {
+                            open: styleSet,
+                            close: {},
+                        }
+                    }
+                );
+                break;
+            case "close":
+                this.setState(
+                    {
+                        typeStyle: {
+                            close: styleSet,
+                            open: {},
+                        }
+                    }
+                );
+                break;
+        }
+    }
+
+    changeEraseStyle(boolean) {
+        if (boolean) {
+            this.setState({
+                eraseStyle: this.selectedStyle,
+            });
+        }
+        else {
+            this.setState({
+                eraseStyle: {},
+            });
+        }
+    }
+
     render() {
         return (
             <div
                 className={"canvasConfig-main-div"}>
-                <button onClick={() => {
-                    this.zoomIn()
-                }}>
-                    {
-                        `Zoom in`
-                    }
+                <div>
+                    <button onClick={() => {
+                        this.zoomIn()
+                    }}>
+                        {
+                            `Zoom in`
+                        }
 
-                </button>
-                <button
-                    onClick={() => {
-                        this.zoomOut()
-                    }}>
-                    {
-                        `Zoom out`
-                    }
-                </button>
-                <button
-                    onClick={() => {
-                        this.saveMarkups();
-                    }}>
-                    {
-                        `Save Markups`
-                    }
-                </button>
-                <button
-                    onClick={() => {
-                        this.getMarkups();
-                    }}>
-                    {
-                        `Get Markups`
-                    }
-                </button>
-                <button
-                    onClick={() => {
-                        this.props.parent.canvas.cleanCanvas();
-                    }}>
-                    Clean Canvas
-                </button>
+                    </button>
+                    <button
+                        onClick={() => {
+                            this.zoomOut()
+                        }}>
+                        {
+                            `Zoom out`
+                        }
+                    </button>
+                </div>
+                <div>
+                    <button
+                        onClick={() => {
+                            this.saveMarkups();
+                        }}>
+                        {
+                            `Save Markups`
+                        }
+                    </button>
+                    <button
+                        onClick={() => {
+                            this.getMarkups();
+                        }}>
+                        {
+                            `Get Markups`
+                        }
+                    </button>
+                </div>
+                <div>
+                    <button
+                        onClick={() => {
+                            this.props.parent.canvas.cleanCanvas();
+                        }}>
+                        Clean Canvas
+                    </button>
+                    <button
+                        style={this.state.eraseStyle}
+                        onClick={() => {
+                            if (this.props.parent.canvas.state.erase === true) {
+                                this.props.parent.canvas.setState(
+                                    {
+                                        erase: false,
+                                    }
+                                );
+                                this.changeEraseStyle(false);
+                            }
+                            else {
+                                this.props.parent.canvas.setState(
+                                    {
+                                        erase: true,
+                                    }
+                                );
+                                this.changeEraseStyle(true);
+                            }
+
+                        }}>
+                        Erase
+                    </button>
+                </div>
 
                 <TextField
                     label={"Page"}
@@ -165,6 +284,138 @@ export default class CanvasConfiguration extends Component {
                         this.state.pagesArray
                     }
                 </TextField>
+                <div>
+                    <button
+                        style={
+                            this.state.typeStyle.open
+                        }
+                        onClick={() => {
+                            this.props.parent.canvas.setState(
+                                {
+                                    type: "open",
+                                }
+                            );
+                            this.changeSelectedType("open");
+                        }}>
+                        Open
+                    </button>
+                    <button
+                        style={
+                            this.state.typeStyle.close
+                        }
+                        onClick={() => {
+                            this.props.parent.canvas.setState(
+                                {
+                                    type: "close",
+                                }
+                            );
+                            this.changeSelectedType("close");
+                        }}>
+                        Close
+                    </button>
+                </div>
+                <div>
+                    <button
+                        style={
+                            this.state.colorStyle.blue
+                        }
+                        onClick={() => {
+                            this.props.parent.canvas.setState({
+                                color: 'blue'
+                            });
+                            this.changeSelectedColor("blue");
+                        }}>
+                        Blue
+                    </button>
+                    <button
+                        style={
+                            this.state.colorStyle.green
+                        }
+                        onClick={() => {
+                            this.props.parent.canvas.setState({
+                                color: 'green'
+                            });
+                            this.changeSelectedColor("green");
+                        }}>
+                        Green
+                    </button>
+                    <button
+                        style={
+                            this.state.colorStyle.pink
+                        }
+                        onClick={() => {
+                            this.props.parent.canvas.setState({
+                                color: 'pink'
+                            });
+                            this.changeSelectedColor("pink");
+                        }}>
+                        Pink
+                    </button>
+                </div>
+                <div>
+                    <span>
+                        <p>LineWidth:</p>
+                        <input
+                            type={"number"}
+                            id={"line-width-input"}
+                            value={this.state.lineWidth}
+                            onChange={() => {
+                                var input = document.getElementById("line-width-input");
+                                var number = input.value;
+                                if (number <= 0) {
+                                    number = 1;
+                                }
+                                this.setState({
+                                    lineWidth: number,
+                                });
+                                this.props.parent.canvas.setState({
+                                    lineWidth: number,
+                                });
+
+                            }}/>
+                    </span>
+                    <span>
+                        <p>SizeX:</p>
+                        <input
+                            type={"number"}
+                            id={"size-x-input"}
+                            value={this.state.sizeX}
+                            onChange={() => {
+                                var input = document.getElementById("size-x-input");
+                                var number = input.value;
+                                if (number <= 0) {
+                                    number = 1;
+                                }
+                                this.setState({
+                                    sizeX: number,
+                                });
+                                this.props.parent.canvas.setState({
+                                    sizeX: number,
+                                });
+                            }}/>
+                    </span>
+                    <span>
+                        <p>SizeY:</p>
+                        <input
+                            type={"number"}
+                            id={"size-y-input"}
+                            value={this.state.sizeY}
+                            onChange={() => {
+                                var input = document.getElementById("size-y-input");
+                                var number = input.value;
+                                if (number <= 0) {
+                                    number = 1;
+                                }
+                                this.setState({
+                                    sizeY: number,
+                                });
+                                this.props.parent.canvas.setState({
+                                    sizeY: number,
+                                });
+                            }}/>
+                    </span>
+
+                </div>
 
             </div>
         )

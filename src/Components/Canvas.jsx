@@ -13,6 +13,7 @@ class Markup {
         this.type = type;
         this.color = color;
         this.lineWidth = lineWidth;
+
     }
 
     getRelativeX(currentWidth) {
@@ -51,7 +52,7 @@ class Markup {
 
         else if (this.type === "close") {
             console.log(`drawing an markup of the type: ${this.type}`);
-            this.drawOpenMarkup(x, y, sizeX, sizeY, this.color, lineWidth, canvas);
+            this.drawCloseMarkup(x, y, sizeX, sizeY, this.color, lineWidth, canvas);
         }
         else {
             console.log(`could not draw anything because it's type is ${this.type}`);
@@ -96,18 +97,20 @@ export default class Canvas extends Component {
             canvasHeight: 0,
             canvasWidth: 0,
             resizeFactor: 1,
-            shouldErase: false,
+            erase: false,
             type: "open",
+            color: "blue",
+            lineWidth: 1,
+            sizeX: 7,
+            sizeY: 20,
         };
         this.markups = [];
-        this.className = "Canvas";
+        this.setParentProps();
     }
 
     componentDidMount() {
-        this.loadImage();
         this.setOnCanvasClick();
-        this.setParentProps();
-        console.log(this.props.parent.props.book);
+        this.getMarkups();
     }
 
     getImage() {
@@ -123,7 +126,13 @@ export default class Canvas extends Component {
     setOnCanvasClick() {
         var canvas = document.getElementById("canvas");
         canvas.onclick = (mouseEvent) => {
-            this.onCanvasClick(mouseEvent)
+            if (this.state.erase) {
+                this.eraseSingleMarkup(mouseEvent.offsetX, mouseEvent.offsetY);
+            }
+            else {
+                this.onCanvasClick(mouseEvent)
+            }
+
         }
     }
 
@@ -131,15 +140,35 @@ export default class Canvas extends Component {
         var canvas = document.getElementById("canvas");
         var x = mouseEvent.offsetX;
         var y = mouseEvent.offsetY;
-        var color = "blue";
-        var type = "open";
-        var lineWidth = 3;
-        var sizeX = 7;
-        var sizeY = 20;
-
+        var color = this.state.color;
+        var type = this.state.type;
+        var lineWidth = this.state.lineWidth;
+        var sizeX = this.state.sizeX;
+        var sizeY = this.state.sizeY;
         var markup = new Markup(x, y, sizeX, sizeY, canvas.width, canvas.height, type, color, lineWidth);
         markup.drawMarkup(canvas);
         this.markups.push(markup);
+        this.autoTypeChange();
+    }
+
+    autoTypeChange() {
+        var newType;
+        switch (this.state.type) {
+            case "open":
+                newType = "close";
+                this.props.parent.canvasConfiguration.changeSelectedType("close");
+                break;
+            case "close":
+                newType = "open";
+                this.props.parent.canvasConfiguration.changeSelectedType("open");
+                break;
+        }
+        console.log(`previous type: ${this.state.type}, new type: ${newType}`);
+        this.setState(
+            {
+                type: newType,
+            }
+        );
     }
 
     redrawMarkups() {
@@ -210,7 +239,7 @@ export default class Canvas extends Component {
     getMarkups() {
         var bookId = this.props.parent.props.book.id;
         var pageNumber = this.props.parent.props.book.currentPage;
-        var url = `http://localhost:8000/books/getmarkups2/${bookId}/${pageNumber}`;
+        var url = `http://localhost:8000/books/getmarkups/${bookId}/${pageNumber}`;
         var headers = new Headers();
         headers.append("testTitle", "nice weather, isn't it ?");
         var options = {
@@ -266,8 +295,45 @@ export default class Canvas extends Component {
         this.loadImage();
     }
 
-    eraseASingleMarkup() {
+    eraseSingleMarkup(x, y) {
+        var canvas = document.getElementById("canvas");
+        var index = 0;
+        for (var markup of this.markups) {
+            var _X = markup.getRelativeX(canvas.width);
+            var _Y = markup.getRelativeY(canvas.height);
+            var _sizeX = markup.getRelativeSizeX(canvas.width);
+            var _sizeY = markup.getRelativeSizeY(canvas.height);
+            if (markup.type === "open") {
+                if (x >= _X && x <= _X + _sizeX) {
+                    if (y <= _Y + +_sizeY / 2 && y >= _Y - _sizeY / 2) {
 
+                        break;
+                    }
+                }
+            }
+            else if (markup.type === "close") {
+                if (x <= _X && x >= _X - _sizeX) {
+                    if (y <= _Y + +_sizeY / 2 && y >= _Y - _sizeY / 2) {
+                        console.log(`found a markup: ${markup}`);
+                        break;
+                    }
+                }
+            }
+            index++;
+        }
+        var arr1 = this.markups.slice(0, index);
+        var arr2 = this.markups.slice(index+1, this.markups.length);
+        this.clearMarkupArray();
+        var length1 = arr1.length;
+        for(var i =0; i < length1; i++){
+            this.markups.push(arr1.pop());
+        }
+        var length2 = arr2.length;
+        for(var i =0; i < length2; i++){
+            this.markups.push(arr2.pop());
+        }
+        console.log(this.markups);
+        this.loadImage();
     }
 
     getResizeFactor(img) {

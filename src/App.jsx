@@ -76,30 +76,24 @@ class App extends Component {
                             </MenuItem>
 
                             <MenuItem>
-
-
                                 <Link
                                     className={"app-link"}
                                     to="/upload">
                                     Upload
                                 </Link>
-
                             </MenuItem>
 
                             <MenuItem>
-
                                 <Link
                                     id={"canvas-link"}
                                     className={"app-link"}
                                     to="/canvas">
                                     Canvas
                                 </Link>
-
                             </MenuItem>
 
 
                             <MenuItem>
-
                                 <button
                                     onClick={() => {
                                         fetch("http://localhost:8000/books/getpage/2/3/", {
